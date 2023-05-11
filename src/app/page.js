@@ -6,8 +6,28 @@ import {ImagePreview} from './imagePreview';
 import 'react-html5-camera-photo/build/css/index.css';
 
 function App (props) {
-  const [dataUri, setDataUri] = useState('');
+  const [livePhoto, setLivePhoto] = useState('');
   const [selectedImage, setSelectedImage] = useState(null);
+
+  function uploadImages() {
+    console.log(livePhoto)
+    console.log(selectedImage)
+
+    console.log("Uploading file...");
+    const API_ENDPOINT = "https://file.io";
+    const request = new XMLHttpRequest();
+    const formData = new FormData();
+  
+    request.open("POST", "API_ENDPOINT", true);
+    request.onreadystatechange = () => {
+      if (request.readyState === 4 && request.status === 200) {
+        console.log(request.responseText);
+      }
+    };
+    formData.append("image1", livePhoto);
+    formData.append("image2", selectedImage)
+    request.send(formData);
+  }
 
   function handleTakePhoto (dataUri) {
     // Do stuff with the photo...
@@ -17,7 +37,7 @@ function App (props) {
   function handleTakePhotoAnimationDone (dataUri) {
     // Do stuff with the photo...
     console.log('takePhoto');
-    setDataUri(dataUri);
+    setLivePhoto(dataUri);
   }
 
   function handleCameraError (error) {
@@ -36,8 +56,8 @@ function App (props) {
     <>
     <div>
       {
-        (dataUri)
-          ? <ImagePreview dataUri={dataUri}
+        (livePhoto)
+          ? <ImagePreview dataUri={livePhoto}
           />
           :
     <Camera
@@ -60,8 +80,8 @@ function App (props) {
       }
     </div>
     <div>
-      { dataUri && 
-        <button onClick={() => {setDataUri('')}}>Retake</button>
+      { livePhoto && 
+        <button onClick={() => {setLivePhoto('')}}>Retake</button>
       }
     </div>
     <div>
@@ -82,8 +102,8 @@ function App (props) {
     </label>
     </div>
     
-    { (!!selectedImage && !!dataUri) && 
-      <button>
+    { (!!selectedImage && !!livePhoto) && 
+      <button onClick={uploadImages}>
         Upload Images
       </button>
     }
